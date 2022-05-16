@@ -45,14 +45,14 @@ describe('GET /api/articles/:article_id', () => {
     .then(({body}) => {
         const articleObjWithSearchedID = body.articleObj
         expect(articleObjWithSearchedID).toBeInstanceOf(Object)
-        expect(articleObjWithSearchedID).toEqual({
-            article_id: 1,
-            author: "butter_bridge",
-            body: "I find this existence challenging",
-            created_at: "2020-07-09T20:11:00.000Z",
-            title: "Living in the shadow of a great man",
-            topic: "mitch",
-            votes: 100,
+        expect(articleObjWithSearchedID).toMatchObject({
+            article_id: expect.any(Number),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            title: expect.any(String),
+            topic: expect.any(String),
+            votes: expect.any(Number)
         })
       })
     });
