@@ -1,5 +1,6 @@
+
 const express = require("express");
-const { getTopics, getArticleByID } = require("./controllers/controller")
+const { getTopics, getArticleByID, patchArticleVotes } = require("./controllers/controller")
 
 const app = express();
 app.use(express.json());
@@ -9,6 +10,9 @@ app.use(express.json());
 app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticleByID);
 
+//PATCH
+app.patch("/api/articles/:article_id", patchArticleVotes)
+
 //ERROR HANDLING
 app.use("/*", (req, res, next) => {
     res.status(404).send({ msg: "Path not found" });
@@ -16,7 +20,7 @@ app.use("/*", (req, res, next) => {
 
 app.use((err, req, res, next) => { //deal with PSQL error
     if (err.code === '22P02') {
-      res.status(400).send({msg: "Invalid ID type"});
+      res.status(400).send({msg: "Invalid data type"});
     } else {
       next(err);
     }

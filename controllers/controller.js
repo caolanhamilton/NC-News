@@ -1,5 +1,5 @@
 const { response } = require("../app.js");
-const {fetchTopics, fetchArticleByID} = require("../models/model.js")
+const {fetchTopics, fetchArticleByID, addVoteToArticle} = require("../models/model.js")
 
 exports.getTopics = (req, res, next) => {
     fetchTopics()
@@ -18,6 +18,18 @@ exports.getArticleByID = (req, res, next) => {
         })
         .catch((err)=> {
             console.log(err)
-            next(err);
+            next(err)
         });
+}
+
+exports.patchArticleVotes = (req, res, next) => {
+    const articleID = req.params.article_id
+    const votesToAmendBy = req.body.inc_votes
+    addVoteToArticle(articleID, votesToAmendBy)
+        .then((articleWithUpdatedVotes) => {
+            res.status(200).send({articleWithUpdatedVotes})
+        })
+        .catch((err) => {
+            next(err)
+        })
 }

@@ -1,5 +1,6 @@
 const res = require("express/lib/response")
-const db = require("../db/connection.js")
+const db = require("../db/connection.js");
+const app = require("../app.js");
 
 exports.fetchTopics = () => {
     return db
@@ -17,4 +18,14 @@ exports.fetchArticleByID = (articleID) => {
             }
             return response.rows[0]
         });
+}
+
+exports.addVoteToArticle = (articleID, votesToAmendBy) => {
+    if (votesToAmendBy === undefined) {
+        return Promise.reject({status: 400, msg: "Missing required values in body"})
+    }
+    return db
+        .query("UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *", [votesToAmendBy, articleID]).then((response) => {
+           return response.rows[0]; 
+        })  
 }
