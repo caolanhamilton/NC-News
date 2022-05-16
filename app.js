@@ -22,7 +22,7 @@ app.use((err, req, res, next) => { //deal with PSQL error
     }
 });
 
-app.use((err, req, res, next) => { //deal with customer errors
+app.use((err, req, res, next) => { //deal with custom errors
     if (err.status){
       res.status(err.status).send({msg: err.msg})
     } else {
