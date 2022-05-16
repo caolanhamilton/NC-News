@@ -69,8 +69,68 @@ describe('GET /api/articles/:article_id', () => {
         .get("/api/articles/notanid")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Invalid ID type");
+          expect(body.msg).toBe("Invalid data type");
         });
     });
 });
 
+describe('PATCH /api/articles/:article_id', () => {
+    test('200: Returns updated article, with vote incremented by positive integer', () => {
+        const voteUpdateObj = { inc_votes : 7 }
+        return request(app)
+        .patch('/api/articles/1')
+        .send(voteUpdateObj)
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articleWithUpdatedVotes).toBeInstanceOf(Object)
+          expect(body.articleWithUpdatedVotes).toMatchObject({
+            article_id: 1,
+            title: expect.any(String),
+            topic: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            created_at: expect.any(String),
+            votes: 107
+          })
+        })
+    });
+    test('200: Returns updated article, with vote decremented by negative integer', () => {
+      const voteUpdateObj = { inc_votes : -10 }
+      return request(app)
+      .patch('/api/articles/2')
+      .send(voteUpdateObj)
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articleWithUpdatedVotes).toBeInstanceOf(Object)
+        expect(body.articleWithUpdatedVotes).toMatchObject({
+          article_id: 2,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: -10
+        })
+      })
+  });
+  test('400 Bad request: if request is missing required body or is malformed', () => {
+    const voteUpdateObj = {}
+    return request(app)
+      .patch('/api/articles/2')
+      .send(voteUpdateObj)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Missing required values in body");
+      });
+  });
+  test('400 Bad request: if request body objects vote value is of wrong type', () => {
+    const voteUpdateObj = { inc_votes : "not a number" }
+    return request(app)
+      .patch('/api/articles/2')
+      .send(voteUpdateObj)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid data type");
+      });
+  });
+});
