@@ -3,7 +3,8 @@ const seed = require("../db/seeds/seed.js")
 const testData = require("../db/data/test-data/index.js")
 const db = require("../db/connection.js")
 const app = require("../app.js")
-const request = require("supertest")
+const request = require("supertest");
+const { response } = require("../app.js");
 
 afterAll(() => db.end());
 
@@ -35,3 +36,41 @@ describe('GET /api/topics', () => {
       });
     });
 });
+
+describe('GET /api/articles/:article_id', () => {
+    test('200: Returns an article object', () => {
+    return request(app)
+    .get(`/api/articles/1`)
+    .expect(200)
+    .then(({body}) => {
+        const articleObjWithSearchedID = body.articleObj
+        expect(articleObjWithSearchedID).toBeInstanceOf(Object)
+        expect(articleObjWithSearchedID).toEqual({
+            article_id: 1,
+            author: "butter_bridge",
+            body: "I find this existence challenging",
+            created_at: "2020-07-09T20:11:00.000Z",
+            title: "Living in the shadow of a great man",
+            topic: "mitch",
+            votes: 100,
+        })
+      })
+    });
+    test('404: Resource does not exist with that ID', () => {
+      return request(app)
+      .get("/api/articles/99999999")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe("Resource not found with this ID")
+      });
+    });
+    test('400: Bad request, invalid ID type ', () => {
+        return request(app)
+        .get("/api/articles/notanid")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Invalid ID type");
+        });
+    });
+});
+
