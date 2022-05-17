@@ -4,7 +4,6 @@ const testData = require("../db/data/test-data/index.js")
 const db = require("../db/connection.js")
 const app = require("../app.js")
 const request = require("supertest");
-const { response } = require("../app.js");
 
 afterAll(() => db.end());
 
@@ -62,9 +61,7 @@ describe('GET /api/articles/:article_id', () => {
       .expect(200)
       .then(({body}) => {
           const articleObjWithSearchedID = body.articleObj
-          expect(articleObjWithSearchedID).toMatchObject({
-            comment_count: 11
-          })
+          expect(articleObjWithSearchedID.comment_count).toEqual(11)
         })
       });
     test('200: Returns 0 for comment_count property if article ID is valid and exists but there are not comments for that article', () => {
@@ -73,7 +70,6 @@ describe('GET /api/articles/:article_id', () => {
       .expect(200)
       .then(({body}) => {
         const articleObjWithSearchedID = body.articleObj
-        console.log(articleObjWithSearchedID)
         expect(articleObjWithSearchedID.comment_count).toEqual(0)
       })
     });
@@ -103,7 +99,6 @@ describe('PATCH /api/articles/:article_id', () => {
         .send(voteUpdateObj)
         .expect(200)
         .then(({ body }) => {
-
           expect(body.articleWithUpdatedVotes).toBeInstanceOf(Object)
           expect(body.articleWithUpdatedVotes).toMatchObject({
             article_id: 1,
