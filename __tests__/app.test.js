@@ -4,7 +4,6 @@ const testData = require("../db/data/test-data/index.js")
 const db = require("../db/connection.js")
 const app = require("../app.js")
 const request = require("supertest");
-const { response } = require("../app.js");
 
 afterAll(() => db.end());
 
@@ -46,14 +45,32 @@ describe('GET /api/articles/:article_id', () => {
         const articleObjWithSearchedID = body.articleObj
         expect(articleObjWithSearchedID).toBeInstanceOf(Object)
         expect(articleObjWithSearchedID).toMatchObject({
-            article_id: expect.any(Number),
-            author: expect.any(String),
-            body: expect.any(String),
-            created_at: expect.any(String),
-            title: expect.any(String),
-            topic: expect.any(String),
-            votes: expect.any(Number)
+            article_id: 1,
+            author: 'butter_bridge',
+            body: 'I find this existence challenging',
+            created_at: '2020-07-09T20:11:00.000Z',
+            title: 'Living in the shadow of a great man',
+            topic: 'mitch',
+            votes: 100
         })
+      })
+    });
+    test('200: Returns comment count for article as property of object', () => {
+      return request(app)
+      .get(`/api/articles/1`)
+      .expect(200)
+      .then(({body}) => {
+          const articleObjWithSearchedID = body.articleObj
+          expect(articleObjWithSearchedID.comment_count).toEqual(11)
+        })
+      });
+    test('200: Returns 0 for comment_count property if article ID is valid and exists but there are not comments for that article', () => {
+      return request(app)
+      .get(`/api/articles/2`)
+      .expect(200)
+      .then(({body}) => {
+        const articleObjWithSearchedID = body.articleObj
+        expect(articleObjWithSearchedID.comment_count).toEqual(0)
       })
     });
     test('404: Resource does not exist with that ID', () => {
@@ -82,7 +99,6 @@ describe('PATCH /api/articles/:article_id', () => {
         .send(voteUpdateObj)
         .expect(200)
         .then(({ body }) => {
-
           expect(body.articleWithUpdatedVotes).toBeInstanceOf(Object)
           expect(body.articleWithUpdatedVotes).toMatchObject({
             article_id: 1,

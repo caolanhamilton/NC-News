@@ -1,5 +1,4 @@
 const db = require("../db/connection.js");
-const app = require("../app.js");
 
 exports.fetchTopics = () => {
     return db
@@ -10,14 +9,17 @@ exports.fetchTopics = () => {
 }
 
 exports.fetchArticleByID = (articleID) => {
+
     return db
-        .query("SELECT * FROM articles WHERE article_id = $1", [articleID])
+        .query(`SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id`, [articleID])
         .then((response) => {
-            if (response.rowCount === 0) {
+            const articleObj = response.rows[0]
+            if (articleObj === undefined) {
                 return Promise.reject({status: 404, msg: "Resource not found with this ID"})
-            }
-            return response.rows[0]
-        });
+               }
+            articleObj.comment_count = Number(articleObj.comment_count)
+            return articleObj
+        }) 
 }
 
 exports.addVoteToArticle = (articleID, votesToAmendBy) => {
