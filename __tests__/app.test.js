@@ -4,7 +4,6 @@ const testData = require("../db/data/test-data/index.js")
 const db = require("../db/connection.js")
 const app = require("../app.js")
 const request = require("supertest");
-const { string } = require("pg-format");
 const sorted = require("jest-sorted");
 
 afterAll(() => db.end());
