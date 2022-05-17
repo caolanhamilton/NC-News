@@ -4,13 +4,15 @@ const testData = require("../db/data/test-data/index.js")
 const db = require("../db/connection.js")
 const app = require("../app.js")
 const request = require("supertest");
+const { string } = require("pg-format");
+const sorted = require("jest-sorted");
 
 afterAll(() => db.end());
 
 beforeEach(() => seed(testData));
 
 describe('GET /api/topics', () => {
-    test('200: Returns array of topic objects ', () => {
+    test('200: Returns array of topic objects', () => {
     return request(app)
     .get("/api/topics")
     .expect(200)
@@ -151,6 +153,7 @@ describe('PATCH /api/articles/:article_id', () => {
       });
   });
 });
+
 describe('GET /api/users', () => {
   test('200: Returns an array of username objects ', () => {
     return request(app)
@@ -166,5 +169,30 @@ describe('GET /api/users', () => {
             })
         })
       })
+  });
+});
+
+describe('GET /api/articles', () => {
+  test('200: Returns array of article objects', () => {
+    return request(app)
+    .get('/api/articles')
+    .expect(200)
+    .then(({body}) => {
+      const arrayOfArticleObjects = body.articles
+      expect(arrayOfArticleObjects).toHaveLength(12)
+      expect(arrayOfArticleObjects).toBeInstanceOf(Array)
+      expect(arrayOfArticleObjects).toBeSortedBy("created_at", { descending: true })
+      arrayOfArticleObjects.forEach(article => {
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          comment_count: expect.any(Number)
+        })
+      })
+    })
   });
 });
