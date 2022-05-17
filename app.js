@@ -1,6 +1,7 @@
 
 const express = require("express");
-const { getTopics, getArticleByID, patchArticleVotes } = require("./controllers/controller")
+const { getTopics, getArticleByID, patchArticleVotes, getUsernames } = require("./controllers/controller")
+const { handlePSQLErr, handleCustomErr, handleInternalServerErr, } = require("./controllers/error.controllers")
 
 const app = express();
 app.use(express.json());
@@ -9,6 +10,7 @@ app.use(express.json());
 
 app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticleByID);
+app.get("/api/users", getUsernames);
 
 //PATCH
 app.patch("/api/articles/:article_id", patchArticleVotes)
@@ -18,21 +20,11 @@ app.use("/*", (req, res, next) => {
     res.status(404).send({ msg: "Path not found" });
   });
 
-app.use((err, req, res, next) => { //deal with PSQL error
-    if (err.code === '22P02') {
-      res.status(400).send({msg: "Invalid data type"});
-    } else {
-      next(err);
-    }
-});
+app.use(handlePSQLErr);
 
-app.use((err, req, res, next) => { //deal with custom errors
-    if (err.status){
-      res.status(err.status).send({msg: err.msg})
-    } else {
-      next(err)
-    }
-})
+app.use(handleCustomErr);
+
+app.use(handleInternalServerErr);
 
 
 module.exports = app;
