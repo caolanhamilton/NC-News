@@ -3,8 +3,9 @@ const app = require("../app.js");
 
 exports.fetchTopics = () => {
     return db
-        .query("SELECT * FROM topics").then((response) => {
-        return response.rows;
+        .query("SELECT * FROM topics")
+        .then((response) => {
+            return response.rows;
     })
 }
 
@@ -27,4 +28,12 @@ exports.addVoteToArticle = (articleID, votesToAmendBy) => {
         .query("UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *", [votesToAmendBy, articleID]).then((response) => {
            return response.rows[0]; 
         })  
+}
+
+exports.fetchUsernames = () => {
+    return db
+        .query("SELECT username FROM users")
+        .then((response) => {
+            return response.rows
+        })
 }

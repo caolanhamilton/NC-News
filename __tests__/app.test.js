@@ -82,7 +82,7 @@ describe('PATCH /api/articles/:article_id', () => {
         .send(voteUpdateObj)
         .expect(200)
         .then(({ body }) => {
-          console.log(body)
+
           expect(body.articleWithUpdatedVotes).toBeInstanceOf(Object)
           expect(body.articleWithUpdatedVotes).toMatchObject({
             article_id: 1,
@@ -133,5 +133,22 @@ describe('PATCH /api/articles/:article_id', () => {
       .then(({ body }) => {
         expect(body.msg).toBe("Invalid data type");
       });
+  });
+});
+describe('GET /api/users', () => {
+  test('200: Returns an array of username objects ', () => {
+    return request(app)
+    .get("/api/users")
+    .expect(200)
+    .then(({body}) => {
+        const arrayOfUsernames = body.usernames
+        expect(arrayOfUsernames).toHaveLength(4);
+        expect(arrayOfUsernames).toBeInstanceOf(Array)
+        arrayOfUsernames.forEach((username) => {
+            expect(username).toMatchObject({
+                username: expect.any(String),
+            })
+        })
+      })
   });
 });
