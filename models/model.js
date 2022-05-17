@@ -30,7 +30,7 @@ exports.addVoteToArticle = (articleID, votesToAmendBy) => {
         })  
 }
 
-exports.fecthUsernames = () => {
+exports.fetchUsernames = () => {
     return db
         .query("SELECT username FROM users")
         .then((response) => {
