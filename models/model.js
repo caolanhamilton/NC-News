@@ -1,7 +1,4 @@
 const db = require("../db/connection.js");
-const app = require("../app.js");
-const res = require("express/lib/response");
-const { response } = require("../app.js");
 
 exports.fetchTopics = () => {
     return db
@@ -13,19 +10,16 @@ exports.fetchTopics = () => {
 
 exports.fetchArticleByID = (articleID) => {
 
-    const commentCountPromise = db.query("SELECT * FROM comments WHERE article_id = $1", [articleID])
-
-    const allArticlesByIDPromise = db.query("SELECT * FROM articles WHERE article_id = $1", [articleID])
-        //article ID valid but there are no comments on article return 0 for comment count
-        return Promise.all([commentCountPromise, allArticlesByIDPromise]).then((values) => {
-            const numberOfComments = values[0].rowCount
-            const articleObj = values[1].rows[0]
+    return db
+        .query(`SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id`, [articleID])
+        .then((response) => {
+            const articleObj = response.rows[0]
             if (articleObj === undefined) {
                 return Promise.reject({status: 404, msg: "Resource not found with this ID"})
-            }
-            articleObj.comment_count = numberOfComments
+               }
+            articleObj.comment_count = Number(articleObj.comment_count)
             return articleObj
-        })
+        }) 
 }
 
 exports.addVoteToArticle = (articleID, votesToAmendBy) => {
