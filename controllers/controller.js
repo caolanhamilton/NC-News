@@ -1,4 +1,3 @@
-const { response } = require("../app.js");
 const {fetchTopics, fetchArticleByID, addVoteToArticle, fetchUsernames} = require("../models/model.js")
 
 exports.getTopics = (req, res, next) => {
@@ -14,11 +13,10 @@ exports.getArticleByID = (req, res, next) => {
     const articleID = req.params.article_id
     fetchArticleByID(articleID)
         .then((articleObj) => {
-            console.log(articleObj)
             res.status(200).send({articleObj})
         })
         .catch((err)=> {
-            console.log(err)
+            console.log(err) //useful while building - delete later
             next(err)
         });
 }
