@@ -82,7 +82,7 @@ describe('GET /api/articles/:article_id', () => {
         expect(body.msg).toBe("Resource not found with this ID")
       });
     });
-    test('400: Bad request, invalid ID type ', () => {
+    test('400: Bad request, invalid ID type', () => {
         return request(app)
         .get("/api/articles/notanid")
         .expect(400)
@@ -193,5 +193,52 @@ describe('GET /api/articles', () => {
         })
       })
     })
+  });
+});
+
+describe('GET /api/articles/:article_id/comments', () => {
+  test('200: Returns array of comment objects', () => {
+    return request(app)
+    .get("/api/articles/1/comments")
+    .then(({body}) => {
+      const commentsArray = body.comments
+      console.log(commentsArray)
+      expect(commentsArray).toHaveLength(11)
+      expect(commentsArray).toBeInstanceOf(Array)
+      commentsArray.forEach(comment => {
+          expect(comment).toMatchObject({
+          comment_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String)
+        })
+      })
+    })
+  });
+
+  test('200: Returns empty array when article exists with given ID but has no comments', () => {
+    return request(app)
+    .get("/api/articles/2/comments")
+    .then(({body}) => {
+      const commentsArray = body.comments
+      expect(commentsArray).toEqual([])
+    })
+  })
+  test('404: Resource does not exist with that ID', () => {
+    return request(app)
+      .get("/api/articles/99999999/comments")
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe("Resource not found with this ID")
+      });
+  });
+  test('400: Bad request, invalid ID type', () => {
+    return request(app)
+        .get("/api/articles/notanid/comments")
+        .expect(400)
+        .then(({body}) => {
+          expect(body.msg).toBe("Invalid data type");
+        });
   });
 });
