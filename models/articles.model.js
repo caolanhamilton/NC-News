@@ -1,15 +1,6 @@
 const db = require("../db/connection.js");
 
-exports.fetchTopics = () => {
-    return db
-        .query("SELECT * FROM topics")
-        .then((response) => {
-            return response.rows;
-    })
-}
-
 exports.fetchArticleByID = (articleID) => {
-
     return db
         .query(`SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id`, [articleID])
         .then((response) => {
@@ -30,14 +21,6 @@ exports.addVoteToArticle = (articleID, votesToAmendBy) => {
         .query("UPDATE articles SET votes = votes + $1 WHERE article_id = $2 RETURNING *", [votesToAmendBy, articleID]).then((response) => {
            return response.rows[0]; 
         })  
-}
-
-exports.fetchUsernames = () => {
-    return db
-        .query("SELECT username FROM users")
-        .then((response) => {
-            return response.rows
-        })
 }
 
 exports.fetchAllArticles = () => {

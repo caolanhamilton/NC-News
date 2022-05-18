@@ -1,13 +1,4 @@
-const {fetchTopics, fetchArticleByID, addVoteToArticle, fetchUsernames, fetchAllArticles} = require("../models/model.js")
-
-exports.getTopics = (req, res, next) => {
-    fetchTopics()
-        .then((arrayOfTopicsObjs) => {
-            res.status(200).send({topics: arrayOfTopicsObjs})
-        }).catch((err) => {
-            next(err)
-        });
-}
+const {fetchArticleByID, addVoteToArticle, fetchAllArticles} = require("../models/articles.model")
 
 exports.getArticleByID = (req, res, next) => {
     const articleID = req.params.article_id
@@ -38,16 +29,6 @@ exports.patchArticleVotes = (req, res, next) => {
             res.status(200).send({articleWithUpdatedVotes})
         })
         .catch((err) => {
-            next(err)
-        })
-}
-
-exports.getUsernames = (req, res, next) => {
-    fetchUsernames()
-        .then((usernames) => {
-            res.status(200).send({usernames})
-        })
-        .catch(() => {
             next(err)
         })
 }
