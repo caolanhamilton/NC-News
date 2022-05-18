@@ -295,6 +295,34 @@ describe('POST /api/articles/:article_id/comments', () => {
         expect(body.msg).toBe("Bad request")
       });
   });
+  test('400: Bad request incorrect username value in body', () => {
+    const commentToSend = {
+      username: "caolan",
+      body: "sample body"
+    }
+
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send(commentToSend)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Bad request")
+      });
+  });
+  test('400 Bad request incorrect body value type', () => {
+    const commentToSend = {
+      username: 0,
+      body: 7
+    }
+
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send(commentToSend)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Bad request")
+      });
+  });
   test('404 Resource not found with that ID', () => {
     const commentToSend = {
       username: "icellusedkars",
@@ -324,5 +352,4 @@ describe('POST /api/articles/:article_id/comments', () => {
       });
   })
 
-  
 });
