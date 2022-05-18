@@ -200,6 +200,7 @@ describe('GET /api/articles/:article_id/comments', () => {
   test('200: Returns array of comment objects', () => {
     return request(app)
     .get("/api/articles/1/comments")
+    .expect(200)
     .then(({body}) => {
       const commentsArray = body.comments
       expect(commentsArray).toHaveLength(11)
@@ -240,4 +241,88 @@ describe('GET /api/articles/:article_id/comments', () => {
           expect(body.msg).toBe("Invalid data type");
         });
   });
+});
+
+describe('POST /api/articles/:article_id/comments', () => {
+  test('201: Created new comment successfully', () => {
+
+    const commentToSend = {
+      username: "icellusedkars",
+      body: "test comment body"
+    }
+
+    return request(app)
+      .post("/api/articles/2/comments")
+      .send(commentToSend)
+      .expect(201)
+      .then((response) => {
+        const createdComment = response.body.newComment
+        expect(createdComment).toBeInstanceOf(Object)
+        expect(createdComment).toEqual({
+          article_id: 2,
+          comment_id: 19,
+          votes: 0,
+          created_at: expect.any(String),
+          author: "icellusedkars",
+          body: "test comment body"
+        })
+    })
+  });
+  test('400: Bad request empty or malformed body', () => {
+    const commentToSend = {
+      body: "sample body"
+    }
+
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send(commentToSend)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Bad request")
+      });
+  });
+  test('400 Bad request incorrect body value type', () => {
+    const commentToSend = {
+      username: 0,
+      body: 7
+    }
+
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send(commentToSend)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Bad request")
+      });
+  });
+  test('404 Resource not found with that ID', () => {
+    const commentToSend = {
+      username: "icellusedkars",
+      body: "test comment body"
+    }
+
+    return request(app)
+      .post("/api/articles/99999999/comments")
+      .send(commentToSend)
+      .expect(404)
+      .then(({body}) => {
+        expect(body.msg).toBe("Resource not found with this ID")
+      });
+  })
+  test('400: Bad request, invalid ID type', () => {
+    const commentToSend = {
+      username: "icellusedkars",
+      body: "test comment body"
+    }
+
+    return request(app)
+      .post("/api/articles/notanid/comments")
+      .send(commentToSend)
+      .expect(400)
+      .then(({body}) => {
+        expect(body.msg).toBe("Invalid data type")
+      });
+  })
+
+  
 });
