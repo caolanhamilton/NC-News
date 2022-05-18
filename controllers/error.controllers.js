@@ -1,6 +1,8 @@
 exports.handlePSQLErr = (err, req, res, next) => {
     if (err.code === '22P02') {
         res.status(400).send({msg: "Invalid data type"});
+      } else if (err.code === '23503' || err.code === "23502") {
+        res.status(400).send({msg: "Bad request"});
       } else {
         next(err);
       }
