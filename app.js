@@ -1,17 +1,17 @@
 
 const express = require("express");
-const { getTopics, getArticleByID, patchArticleVotes, getUsernames, getAllArticles } = require("./controllers/controller")
+const { getTopics, getArticleByID, patchArticleVotes, getUsernames, getAllArticles, getCommentsById} = require("./controllers/controller")
 const { handlePSQLErr, handleCustomErr, handleInternalServerErr, } = require("./controllers/error.controllers")
 
 const app = express();
 app.use(express.json());
 
 //GET
-
 app.get("/api/topics", getTopics);
 app.get("/api/articles/:article_id", getArticleByID);
 app.get("/api/users", getUsernames);
 app.get("/api/articles", getAllArticles)
+app.get("/api/articles/:article_id/comments", getCommentsById)
 
 //PATCH
 app.patch("/api/articles/:article_id", patchArticleVotes)
