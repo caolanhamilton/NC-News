@@ -1,4 +1,5 @@
-const {fetchTopics, fetchArticleByID, addVoteToArticle, fetchUsernames, fetchAllArticles} = require("../models/model.js")
+const res = require("express/lib/response");
+const {fetchTopics, fetchArticleByID, addVoteToArticle, fetchUsernames, fetchAllArticles, fetchCommentsById} = require("../models/model.js")
 
 exports.getTopics = (req, res, next) => {
     fetchTopics()
@@ -47,7 +48,22 @@ exports.getUsernames = (req, res, next) => {
         .then((usernames) => {
             res.status(200).send({usernames})
         })
-        .catch(() => {
+        .catch((err) => {
+            next(err)
+        })
+}
+
+exports.getCommentsById = (req, res, next) => {
+    const articleID = req.params.article_id
+
+    const promisesArray = [fetchCommentsById(articleID), fetchArticleByID(articleID)]
+
+    Promise.all(promisesArray)
+        .then((resolvedPromisesArray) => {
+            const comments = resolvedPromisesArray[0] 
+            res.status(200).send({comments})
+        })
+        .catch((err) => {
             next(err)
         })
 }
