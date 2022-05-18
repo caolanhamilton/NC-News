@@ -3,6 +3,7 @@ const {getCommentsById} = require("./controllers/comments.controller.js")
 const {getArticleByID, patchArticleVotes, getAllArticles} = require("./controllers/articles.controller.js")
 const {getTopics} = require("./controllers/topics.controller.js")
 const {getUsernames} = require("./controllers/users.controller.js")
+const {postComment} = require("./controllers/comments.controller.js")
 const {handlePSQLErr, handleCustomErr, handleInternalServerErr} = require("./controllers/error.controllers")
 
 const app = express();
@@ -17,6 +18,9 @@ app.get("/api/articles/:article_id/comments", getCommentsById)
 
 //PATCH
 app.patch("/api/articles/:article_id", patchArticleVotes)
+
+//POST
+app.post("/api/articles/:article_id/comments", postComment)
 
 //ERROR HANDLING
 app.use("/*", (req, res, next) => {
