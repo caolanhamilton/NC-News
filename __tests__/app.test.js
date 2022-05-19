@@ -260,7 +260,7 @@ describe('GET /api/articles', () => {
       })
     })
   })
-  test('200: Returns empty array when there are no articles for a valid topic', () => {
+  test('200: Returns empty array when there are no articles for a valid topic that exists in topics table', () => {
     return request(app)
     .get('/api/articles/?topic=paper')
     .expect(200)
