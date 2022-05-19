@@ -194,7 +194,29 @@ describe('GET /api/articles', () => {
       })
     })
   });
-  test('200: Returns article sorted by any valid column in either ascending or descending', () => {
+  test('200: Returns article sorted by any valid column in either ascending', () => {
+    return request(app)
+    .get('/api/articles/?sort_by=votes&order=asc')
+    .expect(200)
+    .then(({body}) => {
+      const arrayOfArticleObjects = body.articles
+      expect(arrayOfArticleObjects).toHaveLength(12)
+      expect(arrayOfArticleObjects).toBeInstanceOf(Array)
+      expect(arrayOfArticleObjects).toBeSortedBy("votes", { descending: false })
+      arrayOfArticleObjects.forEach(article => {
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          comment_count: expect.any(Number)
+        })
+      })
+    })
+  });
+  test('200: Returns article sorted by any valid column in either descending', () => {
     return request(app)
     .get('/api/articles/?sort_by=votes&order=asc')
     .expect(200)
@@ -265,9 +287,17 @@ describe('GET /api/articles', () => {
       expect(body.msg).toEqual('Invalid sort by query')
     })
   }) 
-  test('400: Return bad request when passed a topic filter query that is not a valid topic', () => {
+  test.only('404: Return topic not found when passed a valid topic but topic does not yet have articles', () => {
     return request(app)
     .get('/api/articles/?topic=mathsisfun')
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toEqual('No article with topic found')
+    })
+  })
+  test.only('400: Return bad request when passed a topic filter query that is not a valid type', () => {
+    return request(app)
+    .get('/api/articles/?topic=1')
     .expect(400)
     .then(({body}) => {
       expect(body.msg).toEqual('Invalid topic query')
@@ -336,6 +366,7 @@ describe('POST /api/articles/:article_id/comments', () => {
       .expect(201)
       .then((response) => {
         const createdComment = response.body.newComment
+
         expect(createdComment).toBeInstanceOf(Object)
         expect(createdComment).toEqual({
           article_id: 2,
