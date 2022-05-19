@@ -194,7 +194,7 @@ describe('GET /api/articles', () => {
       })
     })
   });
-  test('200: Returns article sorted by any valid column in either ascending', () => {
+  test('200: Returns article sorted by any valid column in ascending order', () => {
     return request(app)
     .get('/api/articles/?sort_by=votes&order=asc')
     .expect(200)
@@ -216,7 +216,7 @@ describe('GET /api/articles', () => {
       })
     })
   });
-  test('200: Returns article sorted by any valid column in either descending', () => {
+  test('200: Returns article sorted by any valid column in descending order', () => {
     return request(app)
     .get('/api/articles/?sort_by=votes&order=asc')
     .expect(200)
