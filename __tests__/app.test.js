@@ -287,7 +287,7 @@ describe('GET /api/articles', () => {
       expect(body.msg).toEqual('Invalid sort by query')
     })
   }) 
-  test.only('404: Return topic not found when passed a valid topic but topic does not yet have articles', () => {
+  test('404: Return topic not found when passed a valid topic but topic does not exists in topics table', () => {
     return request(app)
     .get('/api/articles/?topic=mathsisfun')
     .expect(404)
@@ -295,7 +295,7 @@ describe('GET /api/articles', () => {
       expect(body.msg).toEqual('No article with topic found')
     })
   })
-  test.only('400: Return bad request when passed a topic filter query that is not a valid type', () => {
+  test('400: Return bad request when passed a topic filter query that is not a valid type', () => {
     return request(app)
     .get('/api/articles/?topic=1')
     .expect(400)
