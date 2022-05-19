@@ -1,5 +1,6 @@
 const db = require("../db/connection.js");
 
+
 exports.fetchArticleByID = (articleID) => {
     return db
         .query(`SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id`, [articleID])
@@ -35,22 +36,19 @@ exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', topic) => {
         return Promise.reject({ status: 400, msg: 'Invalid order query' });
     }
    
+    const queryValues = []
+
     let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, CAST(COUNT(comment_id) AS integer) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `
   
     if (topic) {
-        let topicParsed = parseInt(topic)
-        if(isNaN(topicParsed)) {
-            queryString += `WHERE articles.topic = '${topic}'`
-        } else {
-            return Promise.reject({ status: 400,     msg: 'Invalid topic query' }); 
-        }
-        
+        queryString += `WHERE articles.topic = $1`
+        queryValues.push(topic)
     }
   
-    queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`
-   
+   queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`
+
     return db
-        .query(queryString)
+        .query(queryString, queryValues)
         .then((response) => {
             const articlesArray = response.rows
             return articlesArray
