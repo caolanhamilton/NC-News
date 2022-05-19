@@ -39,11 +39,9 @@ exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', topic) => {
   
     if (topic) {
         let topicParsed = parseInt(topic)
-        console.log(topicParsed, topic)
         if(isNaN(topicParsed)) {
             queryString += `WHERE articles.topic = '${topic}'`
         } else {
-            console.log('in PR', topic)
             return Promise.reject({ status: 400,     msg: 'Invalid topic query' }); 
         }
         
