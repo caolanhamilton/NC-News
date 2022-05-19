@@ -171,7 +171,7 @@ describe('GET /api/users', () => {
   });
 });
 
-describe.only('GET /api/articles', () => {
+describe('GET /api/articles', () => {
   test('200: Returns array of article objects defaulting to be sorted by date', () => {
     return request(app)
     .get('/api/articles')
