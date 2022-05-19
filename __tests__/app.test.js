@@ -200,20 +200,7 @@ describe('GET /api/articles', () => {
     .expect(200)
     .then(({body}) => {
       const arrayOfArticleObjects = body.articles
-      expect(arrayOfArticleObjects).toHaveLength(12)
-      expect(arrayOfArticleObjects).toBeInstanceOf(Array)
       expect(arrayOfArticleObjects).toBeSortedBy("votes", { descending: false })
-      arrayOfArticleObjects.forEach(article => {
-        expect(article).toMatchObject({
-          author: expect.any(String),
-          title: expect.any(String),
-          article_id: expect.any(Number),
-          topic: expect.any(String),
-          created_at: expect.any(String),
-          votes: expect.any(Number),
-          comment_count: expect.any(Number)
-        })
-      })
     })
   });
   test('200: Returns article sorted by any valid column in descending order', () => {
@@ -222,20 +209,7 @@ describe('GET /api/articles', () => {
     .expect(200)
     .then(({body}) => {
       const arrayOfArticleObjects = body.articles
-      expect(arrayOfArticleObjects).toHaveLength(12)
-      expect(arrayOfArticleObjects).toBeInstanceOf(Array)
       expect(arrayOfArticleObjects).toBeSortedBy("votes", { descending: false })
-      arrayOfArticleObjects.forEach(article => {
-        expect(article).toMatchObject({
-          author: expect.any(String),
-          title: expect.any(String),
-          article_id: expect.any(Number),
-          topic: expect.any(String),
-          created_at: expect.any(String),
-          votes: expect.any(Number),
-          comment_count: expect.any(Number)
-        })
-      })
     })
   });
   test('200: Returns articles only with queried topic', () => {
@@ -248,15 +222,7 @@ describe('GET /api/articles', () => {
       expect(arrayOfArticleObjects).toBeInstanceOf(Array)
       expect(arrayOfArticleObjects).toBeSortedBy("created_at", { descending: true })
       arrayOfArticleObjects.forEach(article => {
-        expect(article).toMatchObject({
-          author: expect.any(String),
-          title: expect.any(String),
-          article_id: expect.any(Number),
-          topic: 'mitch',
-          created_at: expect.any(String),
-          votes: expect.any(Number),
-          comment_count: expect.any(Number)
-        })
+        expect(article.topic).toBe('mitch')
       })
     })
   })
