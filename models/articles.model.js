@@ -23,14 +23,31 @@ exports.addVoteToArticle = (articleID, votesToAmendBy) => {
         })  
 }
 
-exports.fetchAllArticles = () => {
+
+exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', topic) => {
+ 
+    if (!['author', 'title', 'article_id', 'topic', 'created_at', 'votes'].includes(sort_by)) {
+        return Promise.reject({ status: 400, msg: 'Invalid sort by query' });
+    }
+  
+    if (!['asc', 'desc'].includes(order)) {
+        return Promise.reject({ status: 400, msg: 'Invalid order query' });
+    }
+   
+    let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, CAST(COUNT(comment_id) AS integer) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `
+  
+    if(!['mitch', 'cats', 'paper', undefined].includes(topic)) {
+        return Promise.reject({ status: 400, msg: 'Invalid topic query' });
+    } else if (topic) {
+        queryString += `WHERE articles.topic = '${topic}'`
+    }
+  
+    queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`
+   
     return db
-        .query(`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC`)
+        .query(queryString)
         .then((response) => {
             const articlesArray = response.rows
-            articlesArray.forEach(article => {
-                article.comment_count = Number(article.comment_count)
-            })
             return articlesArray
         })
-}
+ }
