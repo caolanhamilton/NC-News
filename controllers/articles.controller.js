@@ -1,5 +1,5 @@
 const {fetchArticleByID, addVoteToArticle, fetchAllArticles} = require("../models/articles.model")
-const {fetchTopics} = require("../models/topics.model")
+const {checkTopicExists} = require("../models/topics.model")
 
 exports.getArticleByID = (req, res, next) => {
     const articleID = req.params.article_id
@@ -15,20 +15,12 @@ exports.getArticleByID = (req, res, next) => {
 exports.getAllArticles = (req, res, next) => {
     const {sort_by, order, topic} = req.query
 
-    const promisesArray = [fetchTopics(), fetchAllArticles(sort_by, order, topic)]
+    const promisesArray = [checkTopicExists(topic), fetchAllArticles(sort_by, order, topic)]
 
     Promise.all(promisesArray)
         .then((resolvedPromiseArray) => {
             const articles = resolvedPromiseArray[1]
-
-            const listOfValidTopics = resolvedPromiseArray[0].map(topicsObject => topicsObject.slug)
-
-            if(listOfValidTopics.includes(topic) || topic === undefined) {
-                res.status(200).send({articles})
-            } else {
-                res.status(404).send({msg: 'No article with topic found'})
-            }
-
+            res.status(200).send({articles})
         })
         .catch((err) => {
             next(err)
