@@ -258,15 +258,7 @@ describe('GET /api/articles', () => {
     .get('/api/articles/?topic=mathsisfun')
     .expect(404)
     .then(({body}) => {
-      expect(body.msg).toEqual('No article with topic found')
-    })
-  })
-  test('400: Return bad request when passed a topic filter query that is not a valid type', () => {
-    return request(app)
-    .get('/api/articles/?topic=1')
-    .expect(400)
-    .then(({body}) => {
-      expect(body.msg).toEqual('Invalid topic query')
+      expect(body.msg).toEqual('Topic not found')
     })
   })
 });
