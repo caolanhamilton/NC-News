@@ -55,7 +55,6 @@ exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', topic) => {
         .query(queryString)
         .then((response) => {
             const articlesArray = response.rows
-            console.log(response.rows)
             return articlesArray
         })
  }
