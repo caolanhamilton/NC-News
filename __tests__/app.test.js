@@ -171,8 +171,8 @@ describe('GET /api/users', () => {
   });
 });
 
-describe('GET /api/articles', () => {
-  test('200: Returns array of article objects', () => {
+describe.only('GET /api/articles', () => {
+  test('200: Returns array of article objects defaulting to be sorted by date', () => {
     return request(app)
     .get('/api/articles')
     .expect(200)
@@ -194,6 +194,85 @@ describe('GET /api/articles', () => {
       })
     })
   });
+  test('200: Returns article sorted by any valid column in either ascending or descending', () => {
+    return request(app)
+    .get('/api/articles/?sort_by=votes&order=asc')
+    .expect(200)
+    .then(({body}) => {
+      const arrayOfArticleObjects = body.articles
+      expect(arrayOfArticleObjects).toHaveLength(12)
+      expect(arrayOfArticleObjects).toBeInstanceOf(Array)
+      expect(arrayOfArticleObjects).toBeSortedBy("votes", { descending: false })
+      arrayOfArticleObjects.forEach(article => {
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          topic: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          comment_count: expect.any(Number)
+        })
+      })
+    })
+  });
+  test('200: Returns articles only with queried topic', () => {
+    return request(app)
+    .get('/api/articles/?topic=mitch')
+    .expect(200)
+    .then(({body}) => {
+      const arrayOfArticleObjects = body.articles
+      expect(arrayOfArticleObjects).toHaveLength(11)
+      expect(arrayOfArticleObjects).toBeInstanceOf(Array)
+      expect(arrayOfArticleObjects).toBeSortedBy("created_at", { descending: true })
+      arrayOfArticleObjects.forEach(article => {
+        expect(article).toMatchObject({
+          author: expect.any(String),
+          title: expect.any(String),
+          article_id: expect.any(Number),
+          topic: 'mitch',
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+          comment_count: expect.any(Number)
+        })
+      })
+    })
+  })
+  test('200: Returns empty array when there are no articles for a valid topic', () => {
+    return request(app)
+    .get('/api/articles/?topic=paper')
+    .expect(200)
+    .then(({body}) => {
+      const arrayOfArticleObjects = body.articles
+      expect(arrayOfArticleObjects).toHaveLength(0)
+      expect(arrayOfArticleObjects).toBeInstanceOf(Array)
+      expect(arrayOfArticleObjects).toEqual([])
+    })
+  });
+  test('400: Return bad request when passed an order value thats not asc or desc', () => {
+    return request(app)
+    .get('/api/articles/?order=cat')
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toEqual('Invalid order query')
+    })
+  })
+  test('400: Return bad request when passed a sort query that is not a valid column', () => {
+    return request(app)
+    .get('/api/articles/?sort_by=catsarecool')
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toEqual('Invalid sort by query')
+    })
+  }) 
+  test('400: Return bad request when passed a topic filter query that is not a valid topic', () => {
+    return request(app)
+    .get('/api/articles/?topic=mathsisfun')
+    .expect(400)
+    .then(({body}) => {
+      expect(body.msg).toEqual('Invalid topic query')
+    })
+  })
 });
 
 describe('GET /api/articles/:article_id/comments', () => {
