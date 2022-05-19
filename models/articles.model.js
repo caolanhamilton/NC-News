@@ -1,5 +1,6 @@
 const db = require("../db/connection.js");
 
+
 exports.fetchArticleByID = (articleID) => {
     return db
         .query(`SELECT articles.*, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id WHERE articles.article_id = $1 GROUP BY articles.article_id`, [articleID])
@@ -23,14 +24,33 @@ exports.addVoteToArticle = (articleID, votesToAmendBy) => {
         })  
 }
 
-exports.fetchAllArticles = () => {
+
+exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', topic) => {
+
+ 
+    if (!['author', 'title', 'article_id', 'topic', 'created_at', 'votes'].includes(sort_by)) {
+        return Promise.reject({ status: 400, msg: 'Invalid sort by query' });
+    }
+  
+    if (!['asc', 'desc'].includes(order)) {
+        return Promise.reject({ status: 400, msg: 'Invalid order query' });
+    }
+   
+    const queryValues = []
+
+    let queryString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, CAST(COUNT(comment_id) AS integer) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id `
+  
+    if (topic) {
+        queryString += `WHERE articles.topic = $1`
+        queryValues.push(topic)
+    }
+  
+   queryString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order};`
+
     return db
-        .query(`SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, COUNT(comment_id) AS comment_count FROM articles LEFT JOIN comments ON articles.article_id = comments.article_id GROUP BY articles.article_id ORDER BY articles.created_at DESC`)
+        .query(queryString, queryValues)
         .then((response) => {
             const articlesArray = response.rows
-            articlesArray.forEach(article => {
-                article.comment_count = Number(article.comment_count)
-            })
             return articlesArray
         })
-}
+ }

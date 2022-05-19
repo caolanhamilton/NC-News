@@ -1,4 +1,5 @@
 const {fetchArticleByID, addVoteToArticle, fetchAllArticles} = require("../models/articles.model")
+const {checkTopicExists} = require("../models/topics.model")
 
 exports.getArticleByID = (req, res, next) => {
     const articleID = req.params.article_id
@@ -12,14 +13,19 @@ exports.getArticleByID = (req, res, next) => {
 }
 
 exports.getAllArticles = (req, res, next) => {
-    fetchAllArticles()
-        .then((articles) => {
+    const {sort_by, order, topic} = req.query
+
+    const promisesArray = [checkTopicExists(topic), fetchAllArticles(sort_by, order, topic)]
+
+    Promise.all(promisesArray)
+        .then((resolvedPromiseArray) => {
+            const articles = resolvedPromiseArray[1]
             res.status(200).send({articles})
         })
-        .catch((err)=> {
+        .catch((err) => {
             next(err)
         })
-}
+ }
 
 exports.patchArticleVotes = (req, res, next) => {
     const articleID = req.params.article_id
