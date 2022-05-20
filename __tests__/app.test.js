@@ -445,3 +445,116 @@ describe('DELETE /api/comments/:comment_id', () => {
     })
   });
 });
+
+
+describe('GET /api', () => {
+  test('200 Returns JSON containing endpoints', () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({body}) => {
+        expect(body).toEqual(
+          {
+            "GET /api": {
+              "description": "serves up a json representation of all the available endpoints of the api"
+            },
+            "GET /api/topics": {
+              "description": "serves an array of all topics",
+              "queries": [],
+              "exampleResponse": {
+                "topics": [{ "slug": "football", "description": "Footie!" }]
+              }
+            },
+            "GET /api/articles": {
+              "description": "serves an array of all articles",
+              "queries": ["topic", "sort_by", "order"],
+              "exampleResponse": {
+                "articles": [
+                  {
+                    "article_id": 1,
+                    "title": "Seafood substitutions are increasing",
+                    "topic": "cooking",
+                    "author": "weegembump",
+                    "body": "Text from the article..",
+                    "created_at": 1527695953341,
+                    "votes": 200
+                  }
+                ]
+              }
+            },
+            "GET /api/articles/:article_id" : {
+              "description": "serves article object with the given article_id",
+              "queries": [],
+              "exampleResponse": {
+                  "article_id": 1,
+                  "author": "butter_bridge",
+                  "body": "I find this existence challenging",
+                  "created_at": "2020-07-09T20:11:00.000Z",
+                  "title": "Living in the shadow of a great man",
+                  "topic": "mitch",
+                  "votes": 100
+                }
+              },
+            "GET /api/users": {
+              "description": "serves an array of all username objects",
+              "exampleResponse": {
+                "users": [
+                    {
+                      "username": "caolanh"
+                    }
+                  ]
+                }
+            },
+            "GET /api/articles/:article_id/comments": {
+              "description": "serves an array of comments for the the given article_id",
+              "exampleResponse": {
+                "users": [
+                    {
+                      "comment_id": 1,
+                      "votes": 12,
+                      "created_at": "2020-07-09T20:11:00.000Z",
+                      "author": "butter_bridge",
+                      "body": "Text from the comment.."
+                    }
+                  ]
+                }
+            },
+            "PATCH /api/articles/:article_id": {
+              "description": "Accept a request body object representing a vote and updates the articles votes property accordingly",
+              "exampleRequestBody": {
+                "inc_votes" : 1
+              },
+              "exampleResponse": {
+                "article_id": 1,
+                  "author": "butter_bridge",
+                  "body": "I find this existence challenging",
+                  "created_at": "2020-07-09T20:11:00.000Z",
+                  "title": "Living in the shadow of a great man",
+                  "topic": "mitch",
+                  "votes": 101
+                }
+            },
+            "POST /api/articles/:article_id/comments": {
+              "description": "Accept a request body object representing a new comment and adds the comment to the article with the relevant ID",
+              "exampleRequestBody": {
+                "username" : "caolanh",
+                "body" : "Comment text"
+              },
+              "exampleResponse": {
+                "comment_id": 15,
+                "votes": 12,
+                "created_at": "2020-07-09T20:11:00.000Z",
+                "author": "caolanh",
+                "body": "Comment text"
+              }
+            },
+            "DELETE /api/comments/:comment_id": {
+              "description": "Deletes comment with relevant ID",
+              "exampleResponse": {
+              }
+            }
+          }
+        )
+    })
+  })
+  })
