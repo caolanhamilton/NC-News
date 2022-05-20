@@ -19,7 +19,6 @@ exports.makeComment = (articleID, commentObj) => {
 }
 
 exports.checkCommentExistsByCommentID = (commentID) => {
-    console.log(commentID, 'in model')
     return db   
         .query(`SELECT * FROM comments WHERE comment_id = $1`, [commentID])
         .then((response) => {
