@@ -34,7 +34,7 @@ Once you have a local copy of the repo you will need to install a few dependenci
 
  - jest: `npm  install -d jest`
  - jest-extended `npm install -d jest-extended`
- - jest-sorted `npm install -d est-sorted`
+ - jest-sorted `npm install -d jest-sorted`
  - supertest `npm install -d supertest`
  - dotenv `npm install dotenv` 
  - express `npm install express`
