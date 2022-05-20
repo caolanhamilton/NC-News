@@ -1,13 +1,11 @@
-const {fetchCommentsById, makeComment} = require("../models/comments.model.js")
+const {fetchCommentsByArticleId, makeComment, removeComment, checkCommentExistsByCommentID} = require("../models/comments.model.js")
 const {fetchArticleByID} = require("../models/articles.model")
 
 
 exports.getCommentsById = (req, res, next) => {
     const articleID = req.params.article_id
 
-    const promisesArray = [fetchCommentsById(articleID), fetchArticleByID(articleID)]
-
-    Promise.all(promisesArray)
+    Promise.all([fetchCommentsByArticleId(articleID), fetchArticleByID(articleID)])
         .then((resolvedPromisesArray) => {
             const comments = resolvedPromisesArray[0] 
             res.status(200).send({comments})
@@ -21,12 +19,21 @@ exports.postComment = (req, res, next) => {
     const articleID = req.params.article_id
     const commentObj = req.body
 
-    const promisesArray = [fetchArticleByID(articleID),makeComment(articleID, commentObj)]
-
-     Promise.all(promisesArray)
+     Promise.all([fetchArticleByID(articleID),makeComment(articleID, commentObj)])
         .then((resolvedPromisesArray) => {
             const newComment = resolvedPromisesArray[1]
             res.status(201).send({newComment})
+        })
+        .catch((err) => {
+            next(err)
+        })
+}
+
+exports.deleteComment = (req, res, next) => {
+    const commentID = req.params.comment_id
+    Promise.all([checkCommentExistsByCommentID(commentID), removeComment(commentID)])
+        .then(() => {
+            res.status(204).send()
         })
         .catch((err) => {
             next(err)
