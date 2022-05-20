@@ -1,6 +1,6 @@
 const db = require("../db/connection.js");
 
-exports.fetchCommentsById = (articleID) => {
+exports.fetchCommentsByArticleId = (articleID) => {
     return db
         .query('SELECT comment_id, votes, created_at, author, body FROM comments WHERE article_id = $1', [articleID])
         .then((response) => {
@@ -16,4 +16,20 @@ exports.makeComment = (articleID, commentObj) => {
         .then((response) => {
             return response.rows[0]
         })
+}
+
+exports.checkCommentExistsByCommentID = (commentID) => {
+    console.log(commentID, 'in model')
+    return db   
+        .query(`SELECT * FROM comments WHERE comment_id = $1`, [commentID])
+        .then((response) => {
+            if (response.rowCount === 0) {
+                return Promise.reject({ status: 404, msg: 'Comment not found with this ID'})
+            }
+        })
+}
+
+exports.removeComment = (commentID) => {
+    return db
+        .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *", [commentID])
 }
