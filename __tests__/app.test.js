@@ -421,3 +421,27 @@ describe('POST /api/articles/:article_id/comments', () => {
   })
 
 });
+
+describe('DELETE /api/comments/:comment_id', () => {
+  test('204 Deletes comment with given ID and returns no content', () => {
+    return request(app)
+    .delete("/api/comments/1")
+    .expect(204)
+  });
+  test('400 Bad request invalid ID type', () => {
+    return request(app)
+    .delete("/api/comments/dogslikebones")
+    .expect(400) 
+    .then(({body}) => {
+      expect(body.msg).toBe("Invalid data type")
+    })
+  });
+  test('404 Returns resource not found when comment does not exist but ID type is valid', () => {
+    return request(app)
+    .delete("/api/comments/9999999")
+    .expect(404)
+    .then(({body}) => {
+      expect(body.msg).toBe("Comment not found with this ID")
+    })
+  });
+});
