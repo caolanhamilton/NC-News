@@ -6,11 +6,10 @@ const {getTopics} = require("./controllers/topics.controller.js")
 const {getUsernames} = require("./controllers/users.controller.js")
 const {postComment, deleteComment} = require("./controllers/comments.controller.js")
 const { handlePSQLErr, handleCustomErr, handleInternalServerErr } = require("./controllers/error.controllers")
-const cors = require("cors");
-
-app.use(cors());
 
 const app = express();
+const cors = require("cors");
+app.use(cors());
 app.use(express.json());
 
 //GET
