@@ -28,7 +28,7 @@ exports.addVoteToArticle = (articleID, votesToAmendBy) => {
 exports.fetchAllArticles = (sort_by = 'created_at', order = 'desc', topic) => {
 
  
-    if (!['author', 'title', 'article_id', 'topic', 'created_at', 'votes'].includes(sort_by)) {
+    if (!['author', 'title', 'article_id', 'topic', 'created_at', 'comment_count', 'votes'].includes(sort_by)) {
         return Promise.reject({ status: 400, msg: 'Invalid sort by query' });
     }
   
